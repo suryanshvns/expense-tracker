@@ -3,20 +3,50 @@ import http from 'http';
 import cors from 'cors';
 import dotenv from "dotenv"
 
+import passport from 'passport';
+import session from 'express-session';
+import connectMongo from "connect-mongodb-session"
+
 import { ApolloServer } from "@apollo/server"
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+
+import { buildContext } from "graphql-passport";
 
 import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
 import { connectDB } from './database/connectDb.js';
+import { error } from 'console';
 
 dotenv.config();
 const app = express();
  
 const httpServer = http.createServer(app);
 
+const MongoDbStore = connectMongo(session);
+const store = new MongoDbStore({
+  uri: process.env.MONGO_URI,
+  collection: "sessions"
+});
+
+store.on("error", (err) => console.log(err));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie:{
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+    },
+    store: store
+  })
+)
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
@@ -28,10 +58,13 @@ await server.start();
 
 app.use(
   '/',
-  cors(),
+  cors({
+    origin: "https://localhost:3000",
+    credentials: true,
+  }),
   express.json(),
   expressMiddleware(server, {
-    context: async ({ req }) => ({ req }),
+    context: async ({ req,res }) => buildContext({ req,res }),
   }),
 );
 
