@@ -7,7 +7,7 @@ const transactionSchema = new mongoose.Schema({
         required: true
     },
     description: {
-        type: true,
+        type: String,
         required: true
     },
     paymentType: {

@@ -17,9 +17,11 @@ import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
 import { connectDB } from './database/connectDb.js';
-import { error } from 'console';
+import passportConfig from './passport/passport.config.js';
 
 dotenv.config();
+passportConfig();
+
 const app = express();
  
 const httpServer = http.createServer(app);
@@ -52,16 +54,13 @@ const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
   resolvers: mergedResolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  //cors: { credentials: true }
 });
 
 await server.start();
-
+app.use(cors({origin:true,credentials: true}));
 app.use(
-  '/',
-  cors({
-    origin: "https://localhost:3000",
-    credentials: true,
-  }),
+  '/graphql',
   express.json(),
   expressMiddleware(server, {
     context: async ({ req,res }) => buildContext({ req,res }),
@@ -71,4 +70,4 @@ app.use(
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 await connectDB();
 
-console.log(`🚀 Server ready at http://localhost:4000/`);
+console.log(`🚀 Server ready at http://localhost:4000/graphql`);
