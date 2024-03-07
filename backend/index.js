@@ -36,7 +36,7 @@ store.on("error", (err) => console.log(err));
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'mysecreat123',
     resave: false,
     saveUninitialized: false,
     cookie:{

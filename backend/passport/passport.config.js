@@ -11,7 +11,6 @@ const passportConfig = async() => {
     });
 
     passport.deserializeUser(async(id, done) => {
-        console.log("deserialized user");
         try{
             const user = await User.findById(id);
             done(null, user);
