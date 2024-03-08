@@ -11,10 +11,9 @@ const LoginPage = () => {
 		password: "",
 	});
 
-const [login, {loading}] = useMutation(LOGIN, {
-	refetchQueries: ["GetAuthenticatedUser"]
-})
-
+	const [login, {loading}] = useMutation(LOGIN, {
+		refetchQueries: ["GetAuthenticatedUser"]
+	})
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setLoginData((prevData) => ({
@@ -26,6 +25,7 @@ const [login, {loading}] = useMutation(LOGIN, {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if(!loginData.username || !loginData.password) return toast.error("please fill all the fields")
+		console.log(loginData)
 		try{
 			await login({ variables: { input: loginData }})
 		}catch(error) {
@@ -68,7 +68,7 @@ const [login, {loading}] = useMutation(LOGIN, {
 									'
 									disabled={loading}
 								>
-									{loading ? "Loading" : "Login"}
+									{loading ? "Loading.." : "Login"}
 								</button>
 							</div>
 						</form>

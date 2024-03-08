@@ -1,3 +1,4 @@
+import Transaction from "../models/transaction.model.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
@@ -73,14 +74,14 @@ const userResolver = {
   },
   Query: {
     authUser: async (_, __, context) => {
-      try {
-        const user = await context.getUser();
-        return user;
-      } catch (err) {
-        console.log("Error in authUser", err);
-        throw new Error(err.message || "Internal Server Error");
-      }
-    },
+			try {
+				const user = await context.getUser();
+				return user;
+			} catch (err) {
+				console.error("Error in authUser: ", err);
+				throw new Error("Internal server error");
+			}
+		},
     user: async (_, { userId }) => {
       try {
         const user = await User.findById(userId);
@@ -91,6 +92,17 @@ const userResolver = {
       }
     },
   },
+  User: {
+    transactions: async (parent) => {
+      try {
+        const transactions = await Transaction.find({userId: parent._id});
+        return transactions;
+      } catch(err) {
+        console.error("Error in user transactions: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
+    }
+  }
 };
 
 export default userResolver;

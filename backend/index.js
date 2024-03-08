@@ -54,7 +54,7 @@ const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
   resolvers: mergedResolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  //cors: { credentials: true }
+  cors: { credentials: true }
 });
 
 await server.start();

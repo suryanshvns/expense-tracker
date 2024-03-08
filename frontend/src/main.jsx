@@ -11,7 +11,6 @@ const client = new ApolloClient({
   uri: 'http://localhost:4000/graphql',  // This is the url of the graphql server
   cache: new InMemoryCache(),  // Apollo client uses to cache query results after facing them.
   credentials: "include"  // This tells the apollo client to send cookies along with every request to the server.
-
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
